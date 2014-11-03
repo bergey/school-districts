@@ -1,8 +1,8 @@
 /* global require */
 
-require(["sdp/ex-adm", "sdp/ex-percapita"], function(exAdm, exPercapita) {
+require(["sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist"], function(exAdm, exPercapita, percapitaDist) {
     "use strict";
-    exAdm();
-    exPercapita();
+    // exAdm();
+    // exPercapita();
 });
     

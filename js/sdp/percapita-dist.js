@@ -22,21 +22,30 @@ require(["d3", "lodash"], function(d3, _) {
         .orient("left");
 
     var svg = d3.select("body").append("svg")
-        .attr("id", "ex-adm")
+        .attr("id", "percapita-dist")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.csv("../data/ex-vs-adm.csv", function(error, data) {
-        data.forEach(function(d) {
-            d.ex = +d.ex / 1000000;
+        data.forEach(function(d) {           
+            d.percapita = d.ex / d.adm;
             d.adm = +d.adm / 1000;
             d.AUN = +d.AUN;
         });
 
-        x.domain(d3.extent(data, _.property("adm"))).nice();
-        y.domain(d3.extent(data, _.property("ex"))).nice();
+        data.sort(function(a, b) {
+            return a.percapita - b.percapita;
+        });
+
+        data.forEach(function(d, i) {
+            d.x = i / data.length;
+        });
+      
+        // console.log(data);
+        x.domain(d3.extent(data, _.property("x"))).nice();
+        y.domain(d3.extent(data, _.property("percapita"))).nice();
 
         svg.append("g")
             .attr("class", "x axis")
@@ -47,7 +56,7 @@ require(["d3", "lodash"], function(d3, _) {
             .attr("x", width)
             .attr("y", -6)
             .style("text-anchor", "end")
-            .text("Enrollment (x1000)");
+            .text("f-value");
 
         svg.append("g")
             .attr("class", "y axis")
@@ -58,7 +67,7 @@ require(["d3", "lodash"], function(d3, _) {
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Total Expenditures (x1M USD)");
+            .text("Expenditure Per Student (USD)");
 
         svg.selectAll(".dot")
             .data(data)
@@ -66,14 +75,12 @@ require(["d3", "lodash"], function(d3, _) {
             .attr("class", "dot")
             .attr("r", 2)
             .attr("cx", function(d) {
-                return x(d.adm);
+                return x(d.x);
             })
             .attr("cy", function(d) {
-                return y(d.ex);
+                return y(d.percapita);
             })
             .style("fill", "rgba(0,0,255,0.4)");
         
-    });
-
-    
+    });    
 });

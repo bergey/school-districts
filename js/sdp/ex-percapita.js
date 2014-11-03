@@ -35,6 +35,7 @@ require(["d3", "lodash"], function(d3, _) {
             d.AUN = +d.AUN;
         });
 
+        // console.log(data);
         x.domain(d3.extent(data, _.property("adm"))).nice();
         y.domain(d3.extent(data, _.property("percapita"))).nice();
 
@@ -64,16 +65,17 @@ require(["d3", "lodash"], function(d3, _) {
             .data(data)
             .enter().append("circle")
             .attr("class", "dot")
-            .attr("r", 1)
+            // .attr("r", function(d) {
+            //     return Math.log(d.adm);
+        // })
+            .attr("r", 2)
             .attr("cx", function(d) {
                 return x(d.adm);
             })
             .attr("cy", function(d) {
                 return y(d.percapita);
             })
-            .style("fill", "blue");
+            .style("fill", "rgba(0,0,255,0.4)");
         
-    });
-
-    
+    });    
 });

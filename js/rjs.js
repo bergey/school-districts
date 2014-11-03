@@ -17,5 +17,5 @@ require.config({
 
 require( ["sdp/main"], function(main) {
     "use strict";
-    main();
+    // main();
 });
