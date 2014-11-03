@@ -40,23 +40,18 @@ require(["d3", "lodash"], function(d3, _) {
         });
 
         data.forEach(function(d, i) {
-            d.x = i / data.length;
+            var left = data[i-1];  // previous element
+            if (i === 0) {
+                d.cumADM = 0;
+            } else {
+                d.cumADM = left.cumADM + left.adm;
+            }
+            console.log(i + " " + d.cumADM + " " + d.adm);
         });
       
         // console.log(data);
-        x.domain(d3.extent(data, _.property("x"))).nice();
+        x.domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
         y.domain(d3.extent(data, _.property("percapita"))).nice();
-
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0, " + height + ")")
-            .call(xAxis)
-            .append("text")
-            .attr("class", "label")
-            .attr("x", width)
-            .attr("y", -6)
-            .style("text-anchor", "end")
-            .text("f-value");
 
         svg.append("g")
             .attr("class", "y axis")
@@ -69,18 +64,34 @@ require(["d3", "lodash"], function(d3, _) {
             .style("text-anchor", "end")
             .text("Expenditure Per Student (USD)");
 
-        svg.selectAll(".dot")
+        svg.selectAll(".bar")
             .data(data)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr("r", 2)
-            .attr("cx", function(d) {
-                return x(d.x);
+            .enter().append("rect")
+            .attr("class", "bar")
+            .style("fill", "rgba(0,0,255,0.4)")
+            .attr("x", function(d) {
+                return x(d.cumADM);
             })
-            .attr("cy", function(d) {
+            .attr("width", function(d) {
+                return x(d.adm);
+            })
+            .attr("y", function(d) {
                 return y(d.percapita);
             })
-            .style("fill", "rgba(0,0,255,0.4)");
+            .attr("height", function(d) {
+                return height - y(d.percapita);
+            });
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0, " + height + ")")
+            .call(xAxis)
+            .append("text")
+            .attr("class", "label")
+            .attr("x", width)
+            .attr("y", -6)
+            .style("text-anchor", "end")
+            .text("Number of Students (x1000)");
         
     });    
 });
