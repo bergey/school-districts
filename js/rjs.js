@@ -7,14 +7,15 @@ require.config({
   paths: {
     d3: "../bower_components/d3/d3",
     lodash: "../bower_components/lodash/dist/lodash.compat",
-    requirejs: "../bower_components/requirejs/require"
+      requirejs: "../bower_components/requirejs/require",
+      sdp: "sdp"
   },
   packages: [
 
   ]
 });
 
-require( ["sdp"], function(sdp) {
+require( ["sdp/main"], function(main) {
     "use strict";
-    sdp.main();
+    main();
 });
