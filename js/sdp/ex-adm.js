@@ -70,8 +70,7 @@ require(["d3", "lodash"], function(d3, _) {
             })
             .attr("cy", function(d) {
                 return y(d.ex);
-            })
-            .style("fill", "rgba(0,0,255,0.4)");
+            });           
         
     });
 

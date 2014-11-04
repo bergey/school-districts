@@ -2,7 +2,7 @@
 
 require(["d3", "lodash"], function(d3, _) {
     "use strict";
-    
+
     var margin = {top: 20, right: 20, bottom: 30, left: 80};
     var width = 960 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
@@ -29,7 +29,7 @@ require(["d3", "lodash"], function(d3, _) {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.csv("../data/ex-vs-adm.csv", function(error, data) {
-        data.forEach(function(d) {           
+        data.forEach(function(d) {
             d.percapita = d.ex / d.adm;
             d.adm = +d.adm / 1000;
             d.AUN = +d.AUN;
@@ -74,8 +74,7 @@ require(["d3", "lodash"], function(d3, _) {
             })
             .attr("cy", function(d) {
                 return y(d.percapita);
-            })
-            .style("fill", "rgba(0,0,255,0.4)");
-        
-    });    
+            });
+
+    });
 });
