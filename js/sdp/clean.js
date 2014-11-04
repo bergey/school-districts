@@ -6,9 +6,9 @@ define(function() {
     return function(data) {
         
         data.forEach(function(d) {
-            d.ex = +d.ex / 1000000;
+            d.ex = +d.ex;
+            d.adm = +d.adm;
             d.percapita = d.ex / d.adm;
-            d.adm = +d.adm / 1000;
             d.AUN = +d.AUN;
         });
 

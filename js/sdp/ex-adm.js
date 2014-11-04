@@ -19,11 +19,13 @@ define(["d3", "lodash"], function(d3, _) {
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .orient("bottom");
+            .orient("bottom")
+            .tickFormat(d3.format("s"));
 
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient("left");
+            .orient("left")
+            .tickFormat(d3.format("s"));
 
         // create SVG
         var svg = d3.select("body").append("svg")
@@ -47,7 +49,7 @@ define(["d3", "lodash"], function(d3, _) {
             .attr("x", width)
             .attr("y", -6)
             .style("text-anchor", "end")
-            .text("Enrollment (x1000)");
+            .text("Number of Students");
 
         // draw y Axis
         svg.append("g")
@@ -59,7 +61,7 @@ define(["d3", "lodash"], function(d3, _) {
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Total Expenditures (x1M USD)");
+            .text("Total Expenditures (USD)");
 
         // draw data markers
         svg.selectAll(".dot")

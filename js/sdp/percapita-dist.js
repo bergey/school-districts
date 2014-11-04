@@ -19,7 +19,8 @@ define(["d3", "lodash"], function(d3, _) {
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .orient("bottom");
+            .orient("bottom")
+            .tickFormat(d3.format("s"));
 
         var yAxis = d3.svg.axis()
             .scale(y)
@@ -35,7 +36,8 @@ define(["d3", "lodash"], function(d3, _) {
 
         // finish defining axes, depends on data and column assignments
         x.domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
-        y.domain(d3.extent(data, _.property("percapita"))).nice();
+        // y.domain(d3.extent(data, _.property("percapita"))).nice();
+        y.domain([0,30000]);
 
         // draw y Axis
         svg.append("g")
@@ -80,7 +82,7 @@ define(["d3", "lodash"], function(d3, _) {
             .attr("x", width)
             .attr("y", -6)
             .style("text-anchor", "end")
-            .text("Number of Students (x1000)");
+            .text("Number of Students");
 
     };
 });
