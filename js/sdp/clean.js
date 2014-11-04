@@ -44,7 +44,6 @@ define(["lodash"], function(_) {
                     i: i
                 };
             });
-            console.log(d.stackedCosts);
 
         });
 

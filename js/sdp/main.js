@@ -7,9 +7,9 @@ require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/perc
             // load data from CSV
             d3.csv("../data/percapita.csv", function(error, data) {
                 clean(data);
-                exAdm(data);
-                exPercapita(data);
-                percapitaDist(data);
                 percapitaCategories(data);
+                percapitaDist(data);
+                exPercapita(data);
+                exAdm(data);
             });
         });
