@@ -3,10 +3,12 @@
 require(["d3", "lodash"], function(d3, _) {
     "use strict";
 
+    // standard margins
     var margin = {top: 20, right: 20, bottom: 30, left: 80};
     var width = 960 - margin.left - margin.right;
     var height = 500 - margin.top - margin.bottom;
 
+    // partially define axes based on output size, not data domain
     var x = d3.scale.linear()
         .range([0,width]);
 
@@ -21,6 +23,7 @@ require(["d3", "lodash"], function(d3, _) {
         .scale(y)
         .orient("left");
 
+    // create SVG
     var svg = d3.select("body").append("svg")
         .attr("id", "percapita-dist")
         .attr("width", width + margin.left + margin.right)
@@ -28,7 +31,9 @@ require(["d3", "lodash"], function(d3, _) {
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    // load data from CSV
     d3.csv("../data/ex-vs-adm.csv", function(error, data) {
+        // clean data, make things numbers
         data.forEach(function(d) {
             d.percapita = d.ex / d.adm;
             d.adm = +d.adm / 1000;
@@ -39,6 +44,7 @@ require(["d3", "lodash"], function(d3, _) {
             return a.percapita - b.percapita;
         });
 
+        // add up # of students with lower per-capita expenditure
         data.forEach(function(d, i) {
             var left = data[i-1];  // previous element
             d.i = i;
@@ -49,10 +55,11 @@ require(["d3", "lodash"], function(d3, _) {
             }
         });
 
-        // console.log(data);
+        // finish defining axes, depends on data and column assignments
         x.domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
         y.domain(d3.extent(data, _.property("percapita"))).nice();
 
+        // draw y Axis
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis)
@@ -64,6 +71,7 @@ require(["d3", "lodash"], function(d3, _) {
             .style("text-anchor", "end")
             .text("Expenditure Per Student (USD)");
 
+        // draw data markers
         svg.selectAll(".bar")
             .data(data)
             .enter().append("rect")
@@ -84,6 +92,7 @@ require(["d3", "lodash"], function(d3, _) {
                 return height - y(d.percapita);
             });
 
+        // draw x Axis (over data)
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
