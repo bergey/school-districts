@@ -1,59 +1,37 @@
-/* global require */
+/* global define */
 
-require(["d3", "lodash"], function(d3, _) {
+define(["d3", "lodash"], function(d3, _) {
     "use strict";
 
-    // standard margins
-    var margin = {top: 20, right: 20, bottom: 30, left: 80};
-    var width = 960 - margin.left - margin.right;
-    var height = 500 - margin.top - margin.bottom;
+    return function(data) {
 
-    // partially define axes based on output size, not data domain
-    var x = d3.scale.linear()
-        .range([0,width]);
+        // standard margins
+        var margin = {top: 20, right: 20, bottom: 30, left: 80};
+        var width = 960 - margin.left - margin.right;
+        var height = 500 - margin.top - margin.bottom;
 
-    var y = d3.scale.linear()
-        .range([height,0]);
+        // partially define axes based on output size, not data domain
+        var x = d3.scale.linear()
+            .range([0,width]);
 
-    var xAxis = d3.svg.axis()
-        .scale(x)
-        .orient("bottom");
+        var y = d3.scale.linear()
+            .range([height,0]);
 
-    var yAxis = d3.svg.axis()
-        .scale(y)
-        .orient("left");
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
 
-    // create SVG
-    var svg = d3.select("body").append("svg")
-        .attr("id", "percapita-dist")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left");
 
-    // load data from CSV
-    d3.csv("../data/ex-vs-adm.csv", function(error, data) {
-        // clean data, make things numbers
-        data.forEach(function(d) {
-            d.percapita = d.ex / d.adm;
-            d.adm = +d.adm / 1000;
-            d.AUN = +d.AUN;
-        });
-
-        data.sort(function(a, b) {
-            return a.percapita - b.percapita;
-        });
-
-        // add up # of students with lower per-capita expenditure
-        data.forEach(function(d, i) {
-            var left = data[i-1];  // previous element
-            d.i = i;
-            if (i === 0) {
-                d.cumADM = 0;
-            } else {
-                d.cumADM = left.cumADM + left.adm;
-            }
-        });
+        // create SVG
+        var svg = d3.select("body").append("svg")
+            .attr("id", "percapita-dist")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         // finish defining axes, depends on data and column assignments
         x.domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
@@ -104,5 +82,5 @@ require(["d3", "lodash"], function(d3, _) {
             .style("text-anchor", "end")
             .text("Number of Students (x1000)");
 
-    });
+    };
 });
