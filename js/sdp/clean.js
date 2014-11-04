@@ -1,10 +1,12 @@
 /* global define */
 
 // clean data, make things numbers
-define(function() {
+define(["lodash"], function(_) {
     "use strict";
     return function(data) {
-        
+
+        var costCats = ["instruction", "support", "other", "facilities", "financing"];
+
         data.forEach(function(d) {
             d.adm = +d.adm;
             d.wadm = +d.wadm;
@@ -17,7 +19,6 @@ define(function() {
             d.total = +d.total; // total expense per student
             d.timesEnrollment = d.total * d.adm; // all others are per student
             d.AUN = +d.AUN;
-            
         });
 
         data.sort(function(a, b) {
@@ -27,13 +28,25 @@ define(function() {
         // add up # of students with lower per-capita expenditure
         data.forEach(function(d, i) {
             var left = data[i-1];  // previous element
+            var acc = 0;  // for fold over costCats
             d.i = i;
             if (i === 0) {
                 d.cumADM = 0;
             } else {
                 d.cumADM = left.cumADM + left.adm;
             }
+            d.stackedCosts = _.map(costCats, function(category) { // more like a fold
+                return {
+                    category: category,
+                    y0: acc,
+                    y1: acc += d[category],
+                    adm: d.adm, // ugly duplication
+                    i: i
+                };
+            });
+            console.log(d.stackedCosts);
+
         });
-        
+
     };
 });

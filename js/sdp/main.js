@@ -1,7 +1,7 @@
 /* global require */
 
-require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/clean"],
-        function(d3, exAdm, exPercapita, percapitaDist, clean) {
+require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/percapita-categories", "sdp/clean"],
+        function(d3, exAdm, exPercapita, percapitaDist, percapitaCategories, clean) {
             "use strict";
 
             // load data from CSV
@@ -10,5 +10,6 @@ require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/clea
                 exAdm(data);
                 exPercapita(data);
                 percapitaDist(data);
+                percapitaCategories(data);
             });
         });
