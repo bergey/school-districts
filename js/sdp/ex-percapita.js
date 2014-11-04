@@ -35,7 +35,7 @@ define(["d3", "lodash"], function(d3, _) {
 
         // finish defining axes, depends on data and column assignments
         x.domain(d3.extent(data, _.property("adm"))).nice();
-        y.domain(d3.extent(data, _.property("percapita"))).nice();
+        y.domain(d3.extent(data, _.property("total"))).nice();
 
         // draw x Axis
         svg.append("g")
@@ -71,7 +71,7 @@ define(["d3", "lodash"], function(d3, _) {
                 return x(d.adm);
             })
             .attr("cy", function(d) {
-                return y(d.percapita);
+                return y(d.total);
             });
 
     };

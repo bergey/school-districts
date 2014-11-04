@@ -5,7 +5,7 @@ require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/clea
             "use strict";
 
             // load data from CSV
-            d3.csv("../data/ex-vs-adm.csv", function(error, data) {
+            d3.csv("../data/percapita.csv", function(error, data) {
                 clean(data);
                 exAdm(data);
                 exPercapita(data);
