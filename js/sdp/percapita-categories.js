@@ -12,14 +12,12 @@ define(["d3", "lodash"], function(d3, _) {
 
         // partially define axes based on output size, not data domain
         var x = d3.scale.linear()
-            .range([0,width]);
+            .range([0,width])
+            .domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
 
         var y = d3.scale.linear()
-            .range([height,0]);
-
-        // var color = d3.scale.ordinal()
-        //     .domain(["instruction", "support", "other", "facilities", "financing"])
-        //     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+            .range([height,0])
+            .domain([0,30000]);
 
         var color = d3.scale.category10()
             .domain(["instruction", "support", "other", "facilities", "financing"]);
@@ -35,66 +33,79 @@ define(["d3", "lodash"], function(d3, _) {
 
         // create SVG
         var svg = d3.select("body").append("svg")
-            .attr("id", "percapita-dist")
+            .attr("id", "percapita-categories")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        // finish defining axes, depends on data and column assignments
-        x.domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
-        // y.domain(d3.extent(data, _.property("percapita"))).nice();
-        y.domain([0,30000]);
+            // draw y Axis
+            svg.append("g")
+                .attr("class", "y axis")
+                .append("text")
+                .attr("class", "label")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .style("text-anchor", "end")
+                .text("Expenditure Per Student (USD)");
 
-        // draw y Axis
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("class", "label")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .text("Expenditure Per Student (USD)");
-
-        // draw data markers
-        var district = svg.selectAll(".district")
-            .data(data)
-            .enter().append("g")
-            .attr("class", "district")
-            .attr("transform", function(d) {
-                return "translate(" + x(d.cumADM) + ",0)";
-            });
-
-        district.selectAll("rect")
-            .data(_.property("stackedCosts"))
-            .enter().append("rect")
-            .attr("width", function(d) {
-                return x(d.adm);
-            })
-            .attr("y", function(d) {
-                return y(d.y1);
-            })
-            .attr("height", function(d) {
-                return y(d.y0) - y(d.y1);
-            })
-            .style("fill", function(d) {
-                var c = color(d.category);
-                return d.i % 2 ? c : d3.hsl(c).brighter(1).toString();
-            });
-
-        // draw x Axis (over data)
+        // draw x Axis (axis label should go over data)
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
-            .call(xAxis)
             .append("text")
             .attr("class", "label")
             .attr("x", width)
             .attr("y", -6)
             .style("text-anchor", "end")
             .text("Number of Students");
+
+        // limit data to area inside axes
+        svg.append("defs").append("svg:clipPath")
+            .attr("id", "dataPane")
+            .append("svg:rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width)
+            .attr("height", height);
+
+        var dataPane = svg.append("g")
+            .attr("clip-path", "url(#dataPane)");
+
+        var draw = function() {
+
+            svg.select("g.x.axis").call(xAxis);
+            svg.select("g.y.axis").call(yAxis);
+
+            // draw data markers
+            var district = dataPane.selectAll(".district") .data(data);
+
+            district.enter().append("g") .attr("class", "district");
+
+            district.attr("transform", function(d) {
+                return "translate(" + x(d.cumADM) + ",0)";
+            });
+
+            var bars = district.selectAll("rect")
+                .data(_.property("stackedCosts"));
+
+            bars.enter().append("rect");
+
+            bars.attr("width", function(d) {
+                return x(d.adm + d.cumADM) - x(d.cumADM);
+            })
+                .attr("y", function(d) {
+                    return y(d.y1);
+                })
+                .attr("height", function(d) {
+                    return y(d.y0) - y(d.y1);
+                })
+                .style("fill", function(d) {
+                    var c = color(d.category);
+                    return d.i % 2 ? c : d3.hsl(c).brighter(1).toString();
+                });
+        };
 
         // draw legend
         var legend = svg.selectAll(".legend")
@@ -133,5 +144,8 @@ define(["d3", "lodash"], function(d3, _) {
                     financing: "Other Financing Uses"
                 }[cat];
             });
+
+        draw();
+        d3.behavior.zoom().x(x).scaleExtent([1,5]).on("zoom", draw)(svg);
     };
 });

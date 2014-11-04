@@ -13,3 +13,8 @@ body {
     fill: rgba(0,0,255,0.4);
 }
 
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+

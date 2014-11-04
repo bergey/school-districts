@@ -41,6 +41,7 @@ define(["lodash"], function(_) {
                     y0: acc,
                     y1: acc += d[category],
                     adm: d.adm, // ugly duplication
+                    cumADM: d.cumADM,
                     i: i
                 };
             });

@@ -11,10 +11,12 @@ define(["d3", "lodash"], function(d3, _) {
 
         // partially define axes based on output size, not data domain
         var x = d3.scale.linear()
-            .range([0,width]);
+            .range([0,width])
+            .domain(d3.extent(data, _.property("adm"))).nice();
 
         var y = d3.scale.linear()
-            .range([height,0]);
+            .range([height,0])
+            .domain(d3.extent(data, _.property("total"))).nice();
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -33,15 +35,16 @@ define(["d3", "lodash"], function(d3, _) {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        // finish defining axes, depends on data and column assignments
-        x.domain(d3.extent(data, _.property("adm"))).nice();
-        y.domain(d3.extent(data, _.property("total"))).nice();
+        // capture zoom events
+        svg.append("rect")
+            .attr("class", "overlay")
+            .attr("width", width)
+            .attr("height", height);
 
         // draw x Axis
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
-            .call(xAxis)
             .append("text")
             .attr("class", "label")
             .attr("x", width)
@@ -52,7 +55,6 @@ define(["d3", "lodash"], function(d3, _) {
         // draw y Axis
         svg.append("g")
             .attr("class", "y axis")
-            .call(yAxis)
             .append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
@@ -61,18 +63,26 @@ define(["d3", "lodash"], function(d3, _) {
             .style("text-anchor", "end")
             .text("Expenditure Per Student (USD)");
 
-        // draw data markers
-        svg.selectAll(".dot")
-            .data(data)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr("r", 2)
-            .attr("cx", function(d) {
-                return x(d.adm);
-            })
-            .attr("cy", function(d) {
-                return y(d.total);
-            });
+        var draw = function() {
+            // draw axis ticks
+            svg.select("g.x.axis").call(xAxis);
+            svg.select("g.y.axis").call(yAxis);
 
+            // draw data markers
+            var markers = svg.selectAll(".dot").data(data);
+
+            markers.enter().append("circle").attr("class", "dot");
+
+            markers.attr("r", 2)
+                .attr("cx", function(d) {
+                    return x(d.adm);
+                })
+                .attr("cy", function(d) {
+                    return y(d.total);
+                });
+        };
+
+        draw();
+        (d3.behavior.zoom().x(x).on("zoom", draw)).center([0,0]).scaleExtent([1,100])(svg);
     };
 });
