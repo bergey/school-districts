@@ -17,9 +17,12 @@ define(["d3", "lodash"], function(d3, _) {
         var y = d3.scale.linear()
             .range([height,0]);
 
-        var color = d3.scale.ordinal().
-            domain(["instruction", "support", "other", "facilities", "financing"])
-            .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+        // var color = d3.scale.ordinal()
+        //     .domain(["instruction", "support", "other", "facilities", "financing"])
+        //     .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+        var color = d3.scale.category10()
+            .domain(["instruction", "support", "other", "facilities", "financing"]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -78,7 +81,7 @@ define(["d3", "lodash"], function(d3, _) {
             })
             .style("fill", function(d) {
                 var c = color(d.category);
-                return d.i % 2 ? c : d3.rgb(c).brighter(1).toString();
+                return d.i % 2 ? c : d3.hsl(c).brighter(1).toString();
             });
 
         // draw x Axis (over data)
@@ -93,5 +96,42 @@ define(["d3", "lodash"], function(d3, _) {
             .style("text-anchor", "end")
             .text("Number of Students");
 
+        // draw legend
+        var legend = svg.selectAll(".legend")
+            .data(color.domain().slice().reverse())
+            .enter().append("g")
+            .attr("class", "legend")
+            .attr("transform", function(d, i) {
+                return "translate(0," + i * 20 + ")";
+            });
+
+        legend.append("rect")
+            .attr("x", 24)
+            .attr("width", 18)
+            .attr("height", 18)
+            .attr("fill", color);
+
+        legend.append("rect")
+            .attr("x", 24 + 18 + 2)
+            .attr("width", 18)
+            .attr("height", 18)
+            .attr("fill", function(d) {
+                return d3.hsl(color(d)).brighter(1).toString();
+            });
+
+        legend.append("text")
+            .attr("x", 24 + 18*2 + 8)
+            .attr("y", 9)
+            .attr("dy", "0.35em")
+            // .style("text-anchor", "end")
+            .text(function(cat) {
+                return {
+                    instruction: "Instruction",
+                    support: "Support Services",
+                    other: "Non-Instructional, Current",
+                    facilities: "Facilities Acquisition & Construction",
+                    financing: "Other Financing Uses"
+                }[cat];
+            });
     };
 });
