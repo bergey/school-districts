@@ -46,9 +46,9 @@ define(["d3", "lodash"], function(d3, _) {
             .call(xAxis)
             .append("text")
             .attr("class", "label")
-            .attr("x", width)
-            .attr("y", -6)
-            .style("text-anchor", "end")
+            .attr("x", width / 2)
+            .attr("y", margin.bottom)
+            .style("text-anchor", "middle")
             .text("Number of Students");
 
         // draw y Axis
@@ -58,9 +58,10 @@ define(["d3", "lodash"], function(d3, _) {
             .append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
-            .attr("y", 6)
+            .attr("x", height / -2 ) // down, due to rotate above
+            .attr("y", 18-margin.left) // left
             .attr("dy", ".71em")
-            .style("text-anchor", "end")
+            .style("text-anchor", "middle")
             .text("Total Expenditures (USD)");
 
         // draw data markers

@@ -6,7 +6,7 @@ define(["d3", "lodash"], function(d3, _) {
     return function(data) {
 
         // standard margins
-        var margin = {top: 20, right: 20, bottom: 30, left: 80};
+        var margin = {top: 20, right: 20, bottom: 35, left: 80};
         var width = 960 - margin.left - margin.right;
         var height = 500 - margin.top - margin.bottom;
 
@@ -39,16 +39,17 @@ define(["d3", "lodash"], function(d3, _) {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-            // draw y Axis
-            svg.append("g")
-                .attr("class", "y axis")
-                .append("text")
-                .attr("class", "label")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text("Expenditure Per Student (USD)");
+        // draw y Axis
+        svg.append("g")
+            .attr("class", "y axis")
+            .append("text")
+            .attr("class", "label")
+            .attr("transform", "rotate(-90)")
+            .attr("x", height / -2 ) // down, due to rotate above
+            .attr("y", 18-margin.left) // left
+            .attr("dy", ".71em")
+            .style("text-anchor", "middle")
+            .text("Expenditure Per Student (USD)");
 
         // draw x Axis (axis label should go over data)
         svg.append("g")
@@ -56,10 +57,10 @@ define(["d3", "lodash"], function(d3, _) {
             .attr("transform", "translate(0, " + height + ")")
             .append("text")
             .attr("class", "label")
-            .attr("x", width)
-            .attr("y", -6)
-            .style("text-anchor", "end")
-            .text("Number of Students");
+            .attr("x", width / 2)
+            .attr("y", margin.bottom)
+            .style("text-anchor", "middle")
+           .text("Number of Students");
 
         // limit data to area inside axes
         svg.append("defs").append("svg:clipPath")
