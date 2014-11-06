@@ -1,6 +1,6 @@
 /* global define */
 
-define(["d3", "lodash"], function(d3, _) {
+define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
     "use strict";
 
     return function(data) {
@@ -34,6 +34,22 @@ define(["d3", "lodash"], function(d3, _) {
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        // details about currently selected point
+        var details = d3.select("body").append("table")
+            .attr("id", "percapita-dist-details")
+            .attr("class", "details");
+
+        var write_details = function(d) {
+            // if (typeof d !== "undefined") {
+            // var d = details.data();
+            details.html("<tr><th>" + util.headers.district + "</th><td>" + d.district +
+                "</td></tr><tr><th>" + util.headers.county + "</th><td>" + d.county +
+                "</td></tr><tr><th>" + util.headers.adm + "</th><td>" + d.adm +
+                "</td></tr><tr><th>" + util.headers.total + "</th><td>" + d.total +
+                         "</tr>");
+        // }
+    };
+        
         // finish defining axes, depends on data and column assignments
         x.domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
         // y.domain(d3.extent(data, _.property("percapita"))).nice();
@@ -71,7 +87,8 @@ define(["d3", "lodash"], function(d3, _) {
             })
             .attr("height", function(d) {
                 return height - y(d.total);
-            });
+            })
+            .on("mouseover", write_details) ;
 
         // draw x Axis (over data)
         svg.append("g")

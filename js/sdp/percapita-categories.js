@@ -1,6 +1,6 @@
 /* global define */
 
-define(["d3", "lodash"], function(d3, _) {
+define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
     "use strict";
 
     return function(data) {
@@ -137,13 +137,7 @@ define(["d3", "lodash"], function(d3, _) {
             .attr("dy", "0.35em")
             // .style("text-anchor", "end")
             .text(function(cat) {
-                return {
-                    instruction: "Instruction",
-                    support: "Support Services",
-                    other: "Non-Instructional, Current",
-                    facilities: "Facilities Acquisition & Construction",
-                    financing: "Other Financing Uses"
-                }[cat];
+                return util.headers[cat];
             });
 
         draw();
