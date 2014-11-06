@@ -36,10 +36,13 @@ define(["lodash"], function(_) {
                 d.cumADM = left.cumADM + left.adm;
             }
             d.stackedCosts = _.map(costCats, function(category) { // more like a fold
+                var y0 = acc;
+                acc += Math.max(0, d[category]);
+                var y1 = acc;
                 return {
                     category: category,
-                    y0: acc,
-                    y1: acc += d[category],
+                    y0: y0,
+                    y1: y1,
                     adm: d.adm, // ugly duplication
                     cumADM: d.cumADM,
                     i: i
