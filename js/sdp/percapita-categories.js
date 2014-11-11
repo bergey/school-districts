@@ -32,15 +32,24 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .orient("left");
 
         // create SVG
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("#graphs").append("svg")
             .attr("id", "percapita-categories")
             .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
+            .attr("height", height + margin.top + margin.bottom);
+
+        var graph = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        // navigation button
+        d3.select("#nav").append("li")
+            .text("Distribution of Expenditures by Category")
+            .classed("nav", true)
+            .on("click", function() {
+                util.showGraph(d3.select(d3.event.target), svg);
+            });
+
         // draw y Axis
-        svg.append("g")
+        graph.append("g")
             .attr("class", "y axis")
             .append("text")
             .attr("class", "label")
@@ -52,7 +61,7 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .text("Expenditure Per Student (USD)");
 
         // draw x Axis (axis label should go over data)
-        svg.append("g")
+        graph.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
             .append("text")
@@ -63,7 +72,7 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
            .text("Number of Students");
 
         // limit data to area inside axes
-        svg.append("defs").append("svg:clipPath")
+        graph.append("defs").append("svg:clipPath")
             .attr("id", "dataPane")
             .append("svg:rect")
             .attr("x", 0)
@@ -71,13 +80,13 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .attr("width", width)
             .attr("height", height);
 
-        var dataPane = svg.append("g")
+        var dataPane = graph.append("g")
             .attr("clip-path", "url(#dataPane)");
 
         var draw = function() {
 
-            svg.select("g.x.axis").call(xAxis);
-            svg.select("g.y.axis").call(yAxis);
+            graph.select("g.x.axis").call(xAxis);
+            graph.select("g.y.axis").call(yAxis);
 
             // draw data markers
             var district = dataPane.selectAll(".district") .data(data);
@@ -109,7 +118,7 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         };
 
         // draw legend
-        var legend = svg.selectAll(".legend")
+        var legend = graph.selectAll(".legend")
             .data(color.domain().slice().reverse())
             .enter().append("g")
             .attr("class", "legend")

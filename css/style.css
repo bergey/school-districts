@@ -21,3 +21,19 @@ body {
 table {
     font-size: 1.0em;
 }
+
+.hidden {
+    display: none;
+}
+
+.selected {
+    color: red;
+}
+
+.nav:hover {
+    color: cyan;
+}
+
+.selected:hover {
+    color: red;
+}

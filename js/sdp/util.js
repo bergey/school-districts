@@ -1,7 +1,7 @@
 /* global define */
 
 // some utility code
-define([], function() {
+define(["d3"], function(d3) {
     "use strict";
 
     return {
@@ -17,6 +17,17 @@ define([], function() {
             facilities: "Facilities Acquisition & Construction",
             financing: "Other Financing Uses",
             total: "Total Expenditures"
+        },
+
+        // show the GRAPH, and hide other graphs
+        // highlight the NAV appropriately
+        // NB: hardcodes the ID which encloses the graphs
+        // and only hides SVGs
+        showGraph: function(nav, graph) {
+            d3.selectAll("#graphs svg").classed("hidden", true);
+            graph.classed("hidden", false);
+            d3.selectAll("#nav li").classed("selected", false);
+            nav.classed("selected", true);
         }
-    };
+     };
 });

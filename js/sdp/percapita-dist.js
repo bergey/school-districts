@@ -27,15 +27,24 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .orient("left");
 
         // create SVG
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("#graphs").append("svg")
             .attr("id", "percapita-dist")
             .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
+            .attr("height", height + margin.top + margin.bottom);
+
+        var graph = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        // navigation button
+        d3.select("#nav").append("li")
+            .text("Distribution of Per-capita Expenditure")
+            .classed("nav", true)
+            .on("click", function() {
+                util.showGraph(d3.select(d3.event.target), svg);
+            });
+
         // details about currently selected point
-        var details = d3.select("body").append("table")
+        var details = d3.select("#graphs").append("table")
             .attr("id", "percapita-dist-details")
             .attr("class", "details");
 
@@ -49,14 +58,14 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
                          "</tr>");
         // }
     };
-        
+
         // finish defining axes, depends on data and column assignments
         x.domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
         // y.domain(d3.extent(data, _.property("percapita"))).nice();
         y.domain([0,30000]);
 
         // draw y Axis
-        svg.append("g")
+        graph.append("g")
             .attr("class", "y axis")
             .call(yAxis)
             .append("text")
@@ -69,7 +78,7 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .text("Expenditure Per Student (USD)");
 
         // draw data markers
-        svg.selectAll(".bar")
+        graph.selectAll(".bar")
             .data(data)
             .enter().append("rect")
             .attr("class", "bar")
@@ -88,10 +97,10 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .attr("height", function(d) {
                 return height - y(d.total);
             })
-            .on("mouseover", write_details) ;
+            .on("mouseover", write_details);
 
         // draw x Axis (over data)
-        svg.append("g")
+        graph.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
             .call(xAxis)

@@ -1,6 +1,6 @@
 /* global define */
 
-define(["d3", "lodash"], function(d3, _) {
+define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
     "use strict";
 
     return function(data) {
@@ -28,19 +28,28 @@ define(["d3", "lodash"], function(d3, _) {
             .tickFormat(d3.format("s"));
 
         // create SVG
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("#graphs").append("svg")
             .attr("id", "ex-adm")
             .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
+            .attr("height", height + margin.top + margin.bottom);
+
+        var graph = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        // navigation button
+        d3.select("#nav").append("li")
+            .text("Total Expenditures vs Enrollment")
+            .classed("nav", true)
+            .on("click", function() {
+                util.showGraph(d3.select(d3.event.target), svg);
+            });
 
         // finish defining axes, depends on data and column assignments
         x.domain(d3.extent(data, _.property("adm"))).nice();
         y.domain(d3.extent(data, _.property("timesEnrollment"))).nice();
 
         // draw x Axis
-        svg.append("g")
+        graph.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
             .call(xAxis)
@@ -52,7 +61,7 @@ define(["d3", "lodash"], function(d3, _) {
             .text("Number of Students");
 
         // draw y Axis
-        svg.append("g")
+        graph.append("g")
             .attr("class", "y axis")
             .call(yAxis)
             .append("text")
@@ -65,7 +74,7 @@ define(["d3", "lodash"], function(d3, _) {
             .text("Total Expenditures (USD)");
 
         // draw data markers
-        svg.selectAll(".dot")
+        graph.selectAll(".dot")
             .data(data)
             .enter().append("circle")
             .attr("class", "dot")

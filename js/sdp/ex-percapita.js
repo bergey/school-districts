@@ -1,6 +1,6 @@
 /* global define */
 
-define(["d3", "lodash"], function(d3, _) {
+define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
     "use strict";
     return function(data) {
 
@@ -28,21 +28,30 @@ define(["d3", "lodash"], function(d3, _) {
             .orient("left");
 
         // create SVG
-        var svg = d3.select("body").append("svg")
+        var svg = d3.select("#graphs").append("svg")
             .attr("id", "ex-percapita")
             .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
+            .attr("height", height + margin.top + margin.bottom);
+
+        var graph = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+        // navigation button
+        d3.select("#nav").append("li")
+            .text("Per-student Expenditure vs Enrollment")
+            .classed("nav", true)
+            .on("click", function() {
+                util.showGraph(d3.select(d3.event.target), svg);
+            });
+
         // capture zoom events
-        svg.append("rect")
+        graph.append("rect")
             .attr("class", "overlay")
             .attr("width", width)
             .attr("height", height);
 
         // draw x Axis
-        svg.append("g")
+        graph.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")  // for ticks
             .append("text")
@@ -53,7 +62,7 @@ define(["d3", "lodash"], function(d3, _) {
             .text("Number of Students");
 
         // draw y Axis
-        svg.append("g")
+        graph.append("g")
             .attr("class", "y axis")
             .append("text")
             .attr("class", "label")
@@ -66,11 +75,11 @@ define(["d3", "lodash"], function(d3, _) {
 
         var draw = function() {
             // draw axis ticks
-            svg.select("g.x.axis").call(xAxis);
-            svg.select("g.y.axis").call(yAxis);
+            graph.select("g.x.axis").call(xAxis);
+            graph.select("g.y.axis").call(yAxis);
 
             // draw data markers
-            var markers = svg.selectAll(".dot").data(data);
+            var markers = graph.selectAll(".dot").data(data);
 
             markers.enter().append("circle").attr("class", "dot");
 
