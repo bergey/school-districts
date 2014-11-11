@@ -10,7 +10,7 @@ body {
 }
 
 .dot {
-    fill: rgba(0,0,255,0.4);
+    fill: rgba(0,0,255,1);
 }
 
 .overlay {

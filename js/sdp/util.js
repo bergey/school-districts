@@ -20,6 +20,17 @@ define(["d3"], function(d3) {
             total: "Total Expenditures"
     };
 
+    util.years = [
+        {text: "2012-2013", path: "expenditures-2012-2013.csv"},
+        {text: "2011-2012", path: "expenditures-2011-2012.csv"},
+        {text: "2010-2011", path: "expenditures-2010-2011.csv"},
+        {text: "2009-2010", path: "expenditures-2009-2010.csv"},
+        {text: "2008-2009", path: "expenditures-2008-2009.csv"},
+        {text: "2007-2008", path: "expenditures-2007-2008.csv"},
+        {text: "2006-2007", path: "expenditures-2006-2007.csv"},
+        {text: "2005-2006", path: "expenditures-2005-2006.csv"},
+    ];
+
     util.dollars = d3.format("$,.2f");
     util.commaFormat = d3.format(",.0f");
 

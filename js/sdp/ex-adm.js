@@ -5,7 +5,7 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
 
     return function(data) {
 
-        // standard margins
+        // stanndard margins
         var margin = {top: 20, right: 20, bottom: 30, left: 80};
         var width = 960 - margin.left - margin.right;
         var height = 500 - margin.top - margin.bottom;
