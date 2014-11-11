@@ -36,7 +36,7 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         // navigation button
-        d3.select("#nav").append("li")
+        var nav = d3.select("#nav").append("li")
             .text("Distribution of Per-capita Expenditure")
             .classed("nav", true)
             .on("click", function() {
@@ -111,5 +111,9 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .style("text-anchor", "middle")
             .text("Number of Students");
 
+        return {
+            nav: nav,
+            image: svg
+        };
     };
 });

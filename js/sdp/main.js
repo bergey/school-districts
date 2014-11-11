@@ -1,7 +1,7 @@
 /* global require */
 
-require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/percapita-categories", "sdp/clean"],
-        function(d3, exAdm, exPercapita, percapitaDist, percapitaCategories, clean) {
+require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/percapita-categories", "sdp/clean", "sdp/util"],
+        function(d3, exAdm, exPercapita, percapitaDist, percapitaCategories, clean, util) {
             "use strict";
 
             // load data from CSV
@@ -9,9 +9,10 @@ require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/perc
                 if (data) {
                     clean(data);
                     percapitaCategories(data);
-                    percapitaDist(data);
+                    var initial = percapitaDist(data);
                     exPercapita(data);
                     exAdm(data);
+                    util.showGraph(initial.nav, initial.image);
                 } else {
                     d3.select("body").html(
                         "<h3>Error " + error.status +

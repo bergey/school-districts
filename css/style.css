@@ -26,14 +26,18 @@ table {
     display: none;
 }
 
+.nav {
+    font: 12px serif;
+}
 .selected {
-    color: red;
+    color: #184B93;
+    font-weight: bold;
 }
 
 .nav:hover {
-    color: cyan;
+    color: #5E82D9;
 }
 
 .selected:hover {
-    color: red;
+    color: #184B93;
 }
