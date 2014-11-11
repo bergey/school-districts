@@ -52,7 +52,6 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         graph.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
-            .call(xAxis)
             .append("text")
             .attr("class", "label")
             .attr("x", width / 2)
@@ -63,7 +62,6 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         // draw y Axis
         graph.append("g")
             .attr("class", "y axis")
-            .call(yAxis)
             .append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
@@ -73,18 +71,31 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .style("text-anchor", "middle")
             .text("Total Expenditures (USD)");
 
-        // draw data markers
-        graph.selectAll(".dot")
-            .data(data)
-            .enter().append("circle")
-            .attr("class", "dot")
-            .attr("r", 2)
-            .attr("cx", function(d) {
-                return x(d.adm);
-            })
-            .attr("cy", function(d) {
-                return y(d.timesEnrollment);
-            });
+        var draw = function() {
+            // draw axis ticks
+            graph.select("g.x.axis").call(xAxis);
+            graph.select("g.y.axis").call(yAxis);
+
+            // draw data markers
+            var markers = graph.selectAll(".dot")
+                .data(data);
+
+            markers.enter(). append("circle")
+                .attr("class", "dot")
+                .attr("r", 2)
+                .on("mouseover", util.writeDetails);
+
+            markers.attr("cx", function(d) {
+                    return x(d.adm);
+                })
+                .attr("cy", function(d) {
+                    return y(d.timesEnrollment);
+                });
+
+        };
+
+        draw();
+        (d3.behavior.zoom().x(x).y(y).on("zoom", draw)).center([0,height]).scaleExtent([1,100])(svg);
 
     };
 });

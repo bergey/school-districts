@@ -43,22 +43,6 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
                 util.showGraph(d3.select(d3.event.target), svg);
             });
 
-        // details about currently selected point
-        var details = d3.select("#graphs").append("table")
-            .attr("id", "percapita-dist-details")
-            .attr("class", "details");
-
-        var write_details = function(d) {
-            // if (typeof d !== "undefined") {
-            // var d = details.data();
-            details.html("<tr><th>" + util.headers.district + "</th><td>" + d.district +
-                "</td></tr><tr><th>" + util.headers.county + "</th><td>" + d.county +
-                "</td></tr><tr><th>" + util.headers.adm + "</th><td>" + d.adm +
-                "</td></tr><tr><th>" + util.headers.total + "</th><td>" + d.total +
-                         "</tr>");
-        // }
-    };
-
         // finish defining axes, depends on data and column assignments
         x.domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
         // y.domain(d3.extent(data, _.property("percapita"))).nice();
@@ -67,7 +51,6 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         // draw y Axis
         graph.append("g")
             .attr("class", "y axis")
-            .call(yAxis)
             .append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
@@ -77,33 +60,10 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .style("text-anchor", "middle")
             .text("Expenditure Per Student (USD)");
 
-        // draw data markers
-        graph.selectAll(".bar")
-            .data(data)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .style("fill", function(d) {
-                return d.i % 2 ? "rgba(0,0,255,0.5)" : "rgba(0,0,255,0.4)";
-            })
-            .attr("x", function(d) {
-                return x(d.cumADM);
-            })
-            .attr("width", function(d) {
-                return x(d.adm);
-            })
-            .attr("y", function(d) {
-                return y(d.total);
-            })
-            .attr("height", function(d) {
-                return height - y(d.total);
-            })
-            .on("mouseover", write_details);
-
-        // draw x Axis (over data)
+        // draw x Axis
         graph.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
-            .call(xAxis)
             .append("text")
             .attr("class", "label")
             .attr("x", width / 2)
@@ -111,6 +71,50 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .style("text-anchor", "middle")
             .text("Number of Students");
 
+        // limit data to area inside axes
+        graph.append("defs").append("svg:clipPath")
+            .attr("id", "dataPane")
+            .append("svg:rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", width)
+            .attr("height", height);
+
+        var dataPane = graph.append("g")
+            .attr("clip-path", "url(#dataPane)");
+
+        var draw = function() {
+
+            graph.select("g.x.axis").call(xAxis);
+            graph.select("g.y.axis").call(yAxis);
+
+            // draw data markers
+            var district = dataPane.selectAll(".bar") .data(data);
+
+            district.enter().append("rect")
+                .attr("class", "bar")
+                .style("fill", function(d) {
+                    return d.i % 2 ? "rgba(0,0,255,0.5)" : "rgba(0,0,255,0.4)";
+                })
+                .on("mouseover", util.writeDetails);
+
+            district.attr("x", function(d) {
+                    return x(d.cumADM);
+                })
+                .attr("width", function(d) {
+                    return x(d.adm + d.cumADM) - x(d.cumADM);
+                })
+                .attr("y", function(d) {
+                    return y(d.total);
+                })
+                .attr("height", function(d) {
+                    return height - y(d.total);
+                });
+
+        };
+
+        draw();
+        d3.behavior.zoom().x(x).scaleExtent([1,5]).on("zoom", draw)(svg);
         return {
             nav: nav,
             image: svg

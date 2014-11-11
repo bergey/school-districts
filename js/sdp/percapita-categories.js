@@ -60,7 +60,7 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .style("text-anchor", "middle")
             .text("Expenditure Per Student (USD)");
 
-        // draw x Axis (axis label should go over data)
+        // draw x Axis
         graph.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0, " + height + ")")
@@ -95,7 +95,8 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
 
             district.attr("transform", function(d) {
                 return "translate(" + x(d.cumADM) + ",0)";
-            });
+            })
+                .on("mouseover", util.writeDetails);
 
             var bars = district.selectAll("rect")
                 .data(_.property("stackedCosts"));

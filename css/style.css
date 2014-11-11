@@ -41,3 +41,8 @@ table {
 .selected:hover {
     color: #184B93;
 }
+
+th {
+    text-align: right;
+    padding-right: 0.5em;
+}

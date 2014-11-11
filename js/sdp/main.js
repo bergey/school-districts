@@ -1,7 +1,7 @@
 /* global require */
 
-require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/percapita-categories", "sdp/clean", "sdp/util"],
-        function(d3, exAdm, exPercapita, percapitaDist, percapitaCategories, clean, util) {
+require(["d3", "lodash", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/percapita-categories", "sdp/clean", "sdp/util"],
+        function(d3, _, exAdm, exPercapita, percapitaDist, percapitaCategories, clean, util) {
             "use strict";
 
             // load data from CSV
@@ -13,6 +13,7 @@ require(["d3", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/perc
                     exPercapita(data);
                     exAdm(data);
                     util.showGraph(initial.nav, initial.image);
+                    util.writeDetails(_.find(data, {county: "Philadelphia"}));
                 } else {
                     d3.select("body").html(
                         "<h3>Error " + error.status +

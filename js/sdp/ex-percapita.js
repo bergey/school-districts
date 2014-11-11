@@ -81,7 +81,8 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             // draw data markers
             var markers = graph.selectAll(".dot").data(data);
 
-            markers.enter().append("circle").attr("class", "dot");
+            markers.enter().append("circle").attr("class", "dot")
+                .on("mouseover", util.writeDetails);
 
             markers.attr("r", 2)
                 .attr("cx", function(d) {
