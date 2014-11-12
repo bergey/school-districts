@@ -6,6 +6,12 @@ define(["d3"], function(d3) {
 
     var util = {};
 
+    // standard margins
+    util.margin = {top: 20, right: 20, bottom: 30, left: 80};
+    util.width = 960 - util.margin.left - util.margin.right;
+    util.height = 500 - util.margin.top - util.margin.bottom;
+
+
     util.headers = {
             AUN: "AUN",
             district: "School District",
@@ -30,6 +36,31 @@ define(["d3"], function(d3) {
         {text: "2006-2007", path: "expenditures-2006-2007.csv"},
         {text: "2005-2006", path: "expenditures-2005-2006.csv"},
     ];
+
+    // keep XML element Id unique by numbering in order of creation
+    var nextClipNumber = 0;
+
+    /** Add an SVG group which clips to the data region of the graph.
+        Note that the axes are drawn *outside* this area.
+     * @param {d3.selection} selection - the parent of the new <g> element.
+     */
+
+    util.dataPane = function(selection) {
+        selection.append("defs").append("svg:clipPath")
+            .attr("id", "dataPane" + nextClipNumber)
+            .append("svg:rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", util.width)
+            .attr("height", util.height);
+
+        var dataPane = selection.append("g")
+            .attr("clip-path", "url(#dataPane" + nextClipNumber + ")");
+
+        nextClipNumber += 1;
+
+        return dataPane;
+    };
 
     util.dollars = d3.format("$,.2f");
     util.commaFormat = d3.format(",.0f");

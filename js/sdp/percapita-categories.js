@@ -5,18 +5,13 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
 
     return function(data) {
 
-        // standard margins
-        var margin = {top: 20, right: 20, bottom: 35, left: 80};
-        var width = 960 - margin.left - margin.right;
-        var height = 500 - margin.top - margin.bottom;
-
         // partially define axes based on output size, not data domain
         var x = d3.scale.linear()
-            .range([0,width])
+            .range([0,util.width])
             .domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
 
         var y = d3.scale.linear()
-            .range([height,0])
+            .range([util.height,0])
             .domain([0,30000]);
 
         var color = d3.scale.category10()
@@ -34,11 +29,11 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         // create SVG
         var svg = d3.select("#graphs").append("svg")
             .attr("id", "percapita-categories")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom);
+            .attr("width", util.width + util.margin.left + util.margin.right)
+            .attr("height", util.height + util.margin.top + util.margin.bottom);
 
         var graph = svg.append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + util.margin.left + "," + util.margin.top + ")");
 
         // navigation button
         d3.select("#nav").append("li")
@@ -54,8 +49,8 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
-            .attr("x", height / -2 ) // down, due to rotate above
-            .attr("y", 18-margin.left) // left
+            .attr("x", util.height / -2 ) // down, due to rotate above
+            .attr("y", 18-util.margin.left) // left
             .attr("dy", ".71em")
             .style("text-anchor", "middle")
             .text("Expenditure Per Student (USD)");
@@ -63,25 +58,15 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         // draw x Axis
         graph.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0, " + height + ")")
+            .attr("transform", "translate(0, " + util.height + ")")
             .append("text")
             .attr("class", "label")
-            .attr("x", width / 2)
-            .attr("y", margin.bottom)
+            .attr("x", util.width / 2)
+            .attr("y", util.margin.bottom)
             .style("text-anchor", "middle")
            .text("Number of Students");
 
-        // limit data to area inside axes
-        graph.append("defs").append("svg:clipPath")
-            .attr("id", "dataPane")
-            .append("svg:rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", width)
-            .attr("height", height);
-
-        var dataPane = graph.append("g")
-            .attr("clip-path", "url(#dataPane)");
+        var dataPane = util.dataPane(graph);
 
         var draw = function() {
 

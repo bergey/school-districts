@@ -5,17 +5,12 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
 
     return function(data) {
 
-        // stanndard margins
-        var margin = {top: 20, right: 20, bottom: 30, left: 80};
-        var width = 960 - margin.left - margin.right;
-        var height = 500 - margin.top - margin.bottom;
-
         // partially define axes based on output size, not data domain
         var x = d3.scale.linear()
-            .range([0,width]);
+            .range([0,util.width]);
 
         var y = d3.scale.linear()
-            .range([height,0]);
+            .range([util.height,0]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -30,11 +25,11 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         // create SVG
         var svg = d3.select("#graphs").append("svg")
             .attr("id", "ex-adm")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom);
+            .attr("width", util.width + util.margin.left + util.margin.right)
+            .attr("height", util.height + util.margin.top + util.margin.bottom);
 
         var graph = svg.append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("transform", "translate(" + util.margin.left + "," + util.margin.top + ")");
 
         // navigation button
         d3.select("#nav").append("li")
@@ -51,11 +46,11 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         // draw x Axis
         graph.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(0, " + height + ")")
+            .attr("transform", "translate(0, " + util.height + ")")
             .append("text")
             .attr("class", "label")
-            .attr("x", width / 2)
-            .attr("y", margin.bottom)
+            .attr("x", util.width / 2)
+            .attr("y", util.margin.bottom)
             .style("text-anchor", "middle")
             .text("Number of Students");
 
@@ -65,11 +60,13 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .append("text")
             .attr("class", "label")
             .attr("transform", "rotate(-90)")
-            .attr("x", height / -2 ) // down, due to rotate above
-            .attr("y", 18-margin.left) // left
+            .attr("x", util.height / -2 ) // down, due to rotate above
+            .attr("y", 18-util.margin.left) // left
             .attr("dy", ".71em")
             .style("text-anchor", "middle")
             .text("Total Expenditures (USD)");
+
+        var dataPane = util.dataPane(graph);
 
         var draw = function() {
             // draw axis ticks
@@ -77,7 +74,7 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             graph.select("g.y.axis").call(yAxis);
 
             // draw data markers
-            var markers = graph.selectAll(".dot")
+            var markers = dataPane.selectAll(".dot")
                 .data(data);
 
             markers.enter(). append("circle")
@@ -95,7 +92,7 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         };
 
         draw();
-        (d3.behavior.zoom().x(x).y(y).on("zoom", draw)).center([0,height]).scaleExtent([1,100])(svg);
+        (d3.behavior.zoom().x(x).y(y).on("zoom", draw)).center([0,util.height]).scaleExtent([1,100])(svg);
 
     };
 });
