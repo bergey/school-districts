@@ -1,42 +1,55 @@
 /* global define */
 
+/* exports:
+ * - draw(data) - redraw with new data or new axis limits; initializes the first time called
+ * - nav - d3 selection of the button to select this graph
+ * - svg - d3 selection of the top SVG element of the graph
+ */
 define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
     "use strict";
 
-    return function(data) {
+    var exAdm = {}; // module return value
+
+    // set by init
+    var data;
+    var x, y, xAxis, yAxis;
+    var graph, dataPane, markers;  // d3 selections
+    var initialized = false;
+
+    var init = function() {
 
         // partially define axes based on output size, not data domain
-        var x = d3.scale.linear()
+        x = d3.scale.linear()
             .range([0,util.width]);
 
-        var y = d3.scale.linear()
+        y = d3.scale.linear()
             .range([util.height,0]);
 
-        var xAxis = d3.svg.axis()
+        xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom")
             .tickFormat(d3.format("s"));
 
-        var yAxis = d3.svg.axis()
+        yAxis = d3.svg.axis()
             .scale(y)
             .orient("left")
             .tickFormat(d3.format("s"));
 
         // create SVG
-        var svg = d3.select("#graphs").append("svg")
+        exAdm.svg = d3.select("#graphs").append("svg")
             .attr("id", "ex-adm")
             .attr("width", util.width + util.margin.left + util.margin.right)
             .attr("height", util.height + util.margin.top + util.margin.bottom);
 
-        var graph = svg.append("g")
+        graph = exAdm.svg.append("g")
             .attr("transform", "translate(" + util.margin.left + "," + util.margin.top + ")");
 
         // navigation button
-        d3.select("#nav").append("li")
+        exAdm.nav = d3.select("#nav").append("li")
             .text("Total Expenditures vs Enrollment")
             .classed("nav", true)
             .on("click", function() {
-                util.showGraph(d3.select(d3.event.target), svg);
+                util.showGraph(d3.select(d3.event.target), exAdm.svg);
             });
 
         // finish defining axes, depends on data and column assignments
@@ -47,18 +60,31 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         util.xaxis("Number of Students")(graph);
         util.yaxis("Total Expenditures (USD)")(graph);
 
-        var dataPane = util.dataPane(graph);
+        dataPane = util.dataPane(graph);
 
-        var draw = function() {
+        (d3.behavior.zoom().x(x).y(y).on("zoom", exAdm.draw)).center([0,util.height]).scaleExtent([1,100])(exAdm.svg);
+
+        initialized = true;
+
+    };
+
+    exAdm.draw = function(newData) {
+        if (newData) {
+            data = newData;
+        }
+        if (!initialized) {
+            init();
+        }
+
             // draw axis ticks
             graph.select("g.x.axis").call(xAxis);
             graph.select("g.y.axis").call(yAxis);
 
             // draw data markers
-            var markers = dataPane.selectAll(".dot")
-                .data(data);
+        markers = dataPane.selectAll(".dot")
+            .data(data);
 
-            markers.enter(). append("circle")
+        markers.enter(). append("circle")
                 .attr("class", "dot")
                 .attr("r", 2)
                 .on("mouseover", util.writeDetails);
@@ -72,8 +98,6 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
 
         };
 
-        draw();
-        (d3.behavior.zoom().x(x).y(y).on("zoom", draw)).center([0,util.height]).scaleExtent([1,100])(svg);
+    return exAdm;
 
-    };
 });

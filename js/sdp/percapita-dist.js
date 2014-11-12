@@ -3,39 +3,47 @@
 define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
     "use strict";
 
-    return function(data) {
+    var percapitaDist = {}; // module return value
+
+    // set by init
+    var data;
+    var x, y, xAxis, yAxis;
+    var graph, dataPane, district;  // d3 selections
+    var initialized = false;
+
+    var init = function() {
 
         // partially define axes based on output size, not data domain
-        var x = d3.scale.linear()
+        x = d3.scale.linear()
             .range([0,util.width]);
 
-        var y = d3.scale.linear()
+        y = d3.scale.linear()
             .range([util.height,0]);
 
-        var xAxis = d3.svg.axis()
+        xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom")
             .tickFormat(d3.format("s"));
 
-        var yAxis = d3.svg.axis()
+        yAxis = d3.svg.axis()
             .scale(y)
             .orient("left");
 
         // create SVG
-        var svg = d3.select("#graphs").append("svg")
+        percapitaDist.svg = d3.select("#graphs").append("svg")
             .attr("id", "percapita-dist")
             .attr("width", util.width + util.margin.left + util.margin.right)
             .attr("height", util.height + util.margin.top + util.margin.bottom);
 
-        var graph = svg.append("g")
+        graph = percapitaDist.svg.append("g")
             .attr("transform", "translate(" + util.margin.left + "," + util.margin.top + ")");
 
         // navigation button
-        var nav = d3.select("#nav").append("li")
+        percapitaDist.nav = d3.select("#nav").append("li")
             .text("Distribution of Per-capita Expenditure")
             .classed("nav", true)
             .on("click", function() {
-                util.showGraph(d3.select(d3.event.target), svg);
+                util.showGraph(d3.select(d3.event.target), percapitaDist.svg);
             });
 
         // finish defining axes, depends on data and column assignments
@@ -48,15 +56,26 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         util.xaxis("Number of Students")(graph);
         util.yaxis("Expenditure Per Student (USD)")(graph);
 
-        var dataPane = util.dataPane(graph);
+        dataPane = util.dataPane(graph);
 
-        var draw = function() {
+        d3.behavior.zoom().x(x).scaleExtent([1,5]).on("zoom", percapitaDist.draw)(percapitaDist.svg);
+
+        initialized = true;
+    };
+
+    percapitaDist.draw = function(newData) {
+        if (newData) {
+            data = newData;
+        }
+        if (!initialized) {
+            init();
+        }
 
             graph.select("g.x.axis").call(xAxis);
             graph.select("g.y.axis").call(yAxis);
 
             // draw data markers
-            var district = dataPane.selectAll(".bar") .data(data);
+        district = dataPane.selectAll(".bar") .data(data);
 
             district.enter().append("rect")
                 .attr("class", "bar")
@@ -80,11 +99,5 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
 
         };
 
-        draw();
-        d3.behavior.zoom().x(x).scaleExtent([1,5]).on("zoom", draw)(svg);
-        return {
-            nav: nav,
-            image: svg
-        };
-    };
+    return percapitaDist;
 });
