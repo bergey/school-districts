@@ -3,113 +3,59 @@
 define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
     "use strict";
 
-    return function(data) {
+    var percapitaCategories = {}; // module return value
 
-        // standard margins
-        var margin = {top: 20, right: 20, bottom: 35, left: 80};
-        var width = 960 - margin.left - margin.right;
-        var height = 500 - margin.top - margin.bottom;
+    // set by init
+    var data;
+    var x, y, xAxis, yAxis, color;
+    var graph, dataPane, district, bars, legend;  // d3 selections
+    var initialized = false;
 
+    var init = function() {
         // partially define axes based on output size, not data domain
-        var x = d3.scale.linear()
-            .range([0,width])
+        x = d3.scale.linear()
+            .range([0,util.width])
             .domain(d3.extent([0,_.last(data).cumADM + _.last(data).adm])).nice();
 
-        var y = d3.scale.linear()
-            .range([height,0])
+        y = d3.scale.linear()
+            .range([util.height,0])
             .domain([0,30000]);
 
-        var color = d3.scale.category10()
+        color = d3.scale.category10()
             .domain(["instruction", "support", "other", "facilities", "financing"]);
 
-        var xAxis = d3.svg.axis()
+        xAxis = d3.svg.axis()
             .scale(x)
             .orient("bottom")
             .tickFormat(d3.format("s"));
 
-        var yAxis = d3.svg.axis()
+        yAxis = d3.svg.axis()
             .scale(y)
             .orient("left");
 
         // create SVG
-        var svg = d3.select("body").append("svg")
+        percapitaCategories.svg = d3.select("#graphs").append("svg")
             .attr("id", "percapita-categories")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .attr("width", util.width + util.margin.left + util.margin.right)
+            .attr("height", util.height + util.margin.top + util.margin.bottom);
 
-        // draw y Axis
-        svg.append("g")
-            .attr("class", "y axis")
-            .append("text")
-            .attr("class", "label")
-            .attr("transform", "rotate(-90)")
-            .attr("x", height / -2 ) // down, due to rotate above
-            .attr("y", 18-margin.left) // left
-            .attr("dy", ".71em")
-            .style("text-anchor", "middle")
-            .text("Expenditure Per Student (USD)");
+        graph = percapitaCategories.svg.append("g")
+            .attr("transform", "translate(" + util.margin.left + "," + util.margin.top + ")");
 
-        // draw x Axis (axis label should go over data)
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0, " + height + ")")
-            .append("text")
-            .attr("class", "label")
-            .attr("x", width / 2)
-            .attr("y", margin.bottom)
-            .style("text-anchor", "middle")
-           .text("Number of Students");
-
-        // limit data to area inside axes
-        svg.append("defs").append("svg:clipPath")
-            .attr("id", "dataPane")
-            .append("svg:rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", width)
-            .attr("height", height);
-
-        var dataPane = svg.append("g")
-            .attr("clip-path", "url(#dataPane)");
-
-        var draw = function() {
-
-            svg.select("g.x.axis").call(xAxis);
-            svg.select("g.y.axis").call(yAxis);
-
-            // draw data markers
-            var district = dataPane.selectAll(".district") .data(data);
-
-            district.enter().append("g") .attr("class", "district");
-
-            district.attr("transform", function(d) {
-                return "translate(" + x(d.cumADM) + ",0)";
+        // navigation button
+        d3.select("#nav").append("li")
+            .text("Distribution of Expenditures by Category")
+            .classed("nav", true)
+            .on("click", function() {
+                util.showGraph(d3.select(d3.event.target), percapitaCategories.svg);
             });
 
-            var bars = district.selectAll("rect")
-                .data(_.property("stackedCosts"));
-
-            bars.enter().append("rect");
-
-            bars.attr("width", function(d) {
-                return x(d.adm + d.cumADM) - x(d.cumADM);
-            })
-                .attr("y", function(d) {
-                    return y(d.y1);
-                })
-                .attr("height", function(d) {
-                    return y(d.y0) - y(d.y1);
-                })
-                .style("fill", function(d) {
-                    var c = color(d.category);
-                    return d.i % 2 ? c : d3.hsl(c).brighter(1).toString();
-                });
-        };
+        // create axis groups; don't draw tick marks yet
+        util.xaxis("Number of Students")(graph);
+        util.yaxis("Expenditure Per Student (USD)")(graph);
 
         // draw legend
-        var legend = svg.selectAll(".legend")
+        legend = graph.selectAll(".legend")
             .data(color.domain().slice().reverse())
             .enter().append("g")
             .attr("class", "legend")
@@ -140,7 +86,53 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
                 return util.headers[cat];
             });
 
-        draw();
-        d3.behavior.zoom().x(x).scaleExtent([1,5]).on("zoom", draw)(svg);
+        dataPane = util.dataPane(graph);
+
+        d3.behavior.zoom().x(x).scaleExtent([1,5]).on("zoom", percapitaCategories.draw)(percapitaCategories.svg);
+
+        initialized = true;
     };
+
+    percapitaCategories.draw = function(newData) {
+        if (newData) {
+            data = newData;
+        }
+        if (!initialized) {
+            init();
+        }
+
+            graph.select("g.x.axis").call(xAxis);
+            graph.select("g.y.axis").call(yAxis);
+
+            // draw data markers
+        district = dataPane.selectAll(".district") .data(data);
+
+            district.enter().append("g") .attr("class", "district");
+
+            district.attr("transform", function(d) {
+                return "translate(" + x(d.cumADM) + ",0)";
+            })
+                .on("mouseover", util.writeDetails);
+
+        bars = district.selectAll("rect")
+                .data(_.property("stackedCosts"));
+
+            bars.enter().append("rect");
+
+            bars.attr("width", function(d) {
+                return x(d.adm + d.cumADM) - x(d.cumADM);
+            })
+                .attr("y", function(d) {
+                    return y(d.y1);
+                })
+                .attr("height", function(d) {
+                    return y(d.y0) - y(d.y1);
+                })
+                .style("fill", function(d) {
+                    var c = color(d.category);
+                    return d.i % 2 ? c : d3.hsl(c).brighter(1).toString();
+                });
+        };
+
+    return percapitaCategories;
 });

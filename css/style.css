@@ -10,7 +10,7 @@ body {
 }
 
 .dot {
-    fill: rgba(0,0,255,0.4);
+    fill: rgba(0,0,255,1);
 }
 
 .overlay {
@@ -20,4 +20,29 @@ body {
 
 table {
     font-size: 1.0em;
+}
+
+.hidden {
+    display: none;
+}
+
+.nav {
+    font: 12px serif;
+}
+.selected {
+    color: #184B93;
+    font-weight: bold;
+}
+
+.nav:hover {
+    color: #5E82D9;
+}
+
+.selected:hover {
+    color: #184B93;
+}
+
+th {
+    text-align: right;
+    padding-right: 0.5em;
 }
