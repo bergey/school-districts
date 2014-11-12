@@ -45,28 +45,9 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
             .attr("width", util.width)
             .attr("height", util.height);
 
-        // draw x Axis
-        graph.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0, " + util.height + ")")  // for ticks
-            .append("text")
-            .attr("class", "label")
-            .attr("x", util.width / 2)
-            .attr("y", util.margin.bottom)
-            .style("text-anchor", "middle")
-            .text("Number of Students");
-
-        // draw y Axis
-        graph.append("g")
-            .attr("class", "y axis")
-            .append("text")
-            .attr("class", "label")
-            .attr("transform", "rotate(-90)")
-            .attr("x", util.height / -2 ) // down, due to rotate above
-            .attr("y", 18-util.margin.left) // left
-            .attr("dy", ".71em")
-            .style("text-anchor", "middle")
-            .text("Expenditure Per Student (USD)");
+        // create axis groups; don't draw tick marks yet
+        util.xaxis("Number of Students")(graph);
+        util.yaxis("Expenditure Per Student (USD)")(graph);
 
         var dataPane = util.dataPane(graph);
 

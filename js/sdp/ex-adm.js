@@ -43,28 +43,9 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
         x.domain(d3.extent(data, _.property("adm"))).nice();
         y.domain(d3.extent(data, _.property("timesEnrollment"))).nice();
 
-        // draw x Axis
-        graph.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0, " + util.height + ")")
-            .append("text")
-            .attr("class", "label")
-            .attr("x", util.width / 2)
-            .attr("y", util.margin.bottom)
-            .style("text-anchor", "middle")
-            .text("Number of Students");
-
-        // draw y Axis
-        graph.append("g")
-            .attr("class", "y axis")
-            .append("text")
-            .attr("class", "label")
-            .attr("transform", "rotate(-90)")
-            .attr("x", util.height / -2 ) // down, due to rotate above
-            .attr("y", 18-util.margin.left) // left
-            .attr("dy", ".71em")
-            .style("text-anchor", "middle")
-            .text("Total Expenditures (USD)");
+        // create axis groups; don't draw tick marks yet
+        util.xaxis("Number of Students")(graph);
+        util.yaxis("Total Expenditures (USD)")(graph);
 
         var dataPane = util.dataPane(graph);
 

@@ -62,6 +62,43 @@ define(["d3"], function(d3) {
         return dataPane;
     };
 
+    // shared code between 2 axis defs
+    var sharedAxis = function(selection) {
+        var group = selection.append("g");
+        var text = group.append("text")
+            .attr("class", "label")
+            .style("text-anchor", "middle");
+        return { group: group, text: text};
+    };
+
+    util.xaxis = function(label) {
+        // curried to support selection.call(axisFunction) syntax
+        return function(selection) {
+            var axis = sharedAxis(selection);
+            axis.group.attr("class", "x axis")
+                .attr("transform", "translate(0, " + util.height + ")");
+            axis.text.attr("class", "label")
+                .attr("x", util.width / 2)
+                .attr("y", util.margin.bottom)
+                .text(label);
+            return axis.group;
+        };
+    };
+
+    util.yaxis = function(label) {
+        // curried to support selection.call(axisFunction) syntax
+        return function(selection) {
+            var axis = sharedAxis(selection);
+            axis.group.attr("class", "y axis");
+            axis.text.attr("transform", "rotate(-90)")
+                .attr("x", util.height / -2 ) // down, due to rotate above
+                .attr("y", 18-util.margin.left) // left
+                .attr("dy", ".71em")
+                .text(label);
+            return axis.group;
+        };
+    };
+
     util.dollars = d3.format("$,.2f");
     util.commaFormat = d3.format(",.0f");
 
