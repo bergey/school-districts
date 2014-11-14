@@ -34,8 +34,9 @@ require(["d3", "lodash", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist",
                 });
             };
 
-            var pickYear = d3.select("body").append("select")
-                .on("change", load);
+            var pickYear = d3.select("#sidebar").append("select")
+                .on("change", load)
+                .attr("style", "margin-top: 3em;");
 
             pickYear.selectAll("option")
                 .data(util.years).enter()
@@ -43,5 +44,5 @@ require(["d3", "lodash", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist",
                 .text(_.property("text"));
 
             load(util.years[0], percapitaDist); // load most recent data
-            
+
         });
