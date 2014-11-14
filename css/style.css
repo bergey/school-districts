@@ -2,6 +2,10 @@ body {
   font: 10px sans-serif;
 }
 
+h2 {
+    font: 24px serif;
+}
+
 .axis path,
 .axis line {
   fill: none;
@@ -20,10 +24,19 @@ body {
 
 table {
     font-size: 1.0em;
+    margin-top: 3em;
 }
 
 .hidden {
     display: none;
+}
+
+#sidebar {
+    float: left;
+}
+
+#nav {
+    list-style-type: no
 }
 
 .nav {
