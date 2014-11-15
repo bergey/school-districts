@@ -32,6 +32,16 @@ module.exports = function(grunt) {
                 "globalstrict": true // allow "use strict" at top of file outside function wrapper
             },
             "all": ["Gruntfile.js", "js/**/*.js"]
+        },
+        requirejs: {
+            compile: {
+                options: {
+                    baseUrl: "/home/bergey/code/original/school-districts",
+                    mainConfigFile: "js/rjs.js",
+                    out: "dist/js/school-districts.js",
+                    name: "bower_components/requirejs/require.js"
+                }
+            }
         }
       });
       // grunt.loadNpmTasks("grunt-contrib-copy");
@@ -42,7 +52,8 @@ module.exports = function(grunt) {
     // grunt.loadNpmTasks("grunt-contrib-copy");
 
     grunt.registerTask("default", ["bower"]);
-    grunt.registerTask("dist", ["requirejs", "copy", ]);
+    // grunt.registerTask("dist", ["requirejs", "copy", ]);
+    grunt.registerTask("dist", ["requirejs"])
     grunt.registerTask("deploy", ["dist"]);
 
 };
