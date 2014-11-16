@@ -1,9 +1,11 @@
-/* global define */
+/* global require, module */
 
 // some utility code
-define(["d3"], function(d3) {
-    "use strict";
+"use strict";
 
+var d3 = require("d3");
+var _ = require("lodash");
+console.log(d3);
     var util = {};
 
     // standard margins
@@ -126,6 +128,4 @@ define(["d3"], function(d3) {
                     "</tr>");
         };
 
-    return util;
-
-});
+module.exports = util;

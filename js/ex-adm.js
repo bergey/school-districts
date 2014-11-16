@@ -1,12 +1,15 @@
-/* global define */
+/* global module, require */
 
 /* exports:
  * - draw(data) - redraw with new data or new axis limits; initializes the first time called
  * - nav - d3 selection of the button to select this graph
  * - svg - d3 selection of the top SVG element of the graph
  */
-define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
-    "use strict";
+"use strict";
+
+var d3 = require("d3");
+var _ = require("lodash");
+var util = require("./util");
 
     var exAdm = {}; // module return value
 
@@ -98,6 +101,4 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
 
         };
 
-    return exAdm;
-
-});
+    module.exports = exAdm;

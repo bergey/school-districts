@@ -1,7 +1,10 @@
-/* global define */
+/* global require, module */
 
-define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
-    "use strict";
+"use strict";
+
+var d3 = require("d3");
+var _ = require("lodash");
+var util = require("./util");
 
     var percapitaDist = {}; // module return value
 
@@ -99,5 +102,4 @@ define(["d3", "lodash", "sdp/util"], function(d3, _, util) {
 
         };
 
-    return percapitaDist;
-});
+module.exports = percapitaDist;

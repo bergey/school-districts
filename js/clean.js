@@ -1,9 +1,11 @@
-/* global define */
+/* global module, require */
 
 // clean data, make things numbers
-define(["lodash"], function(_) {
+
     "use strict";
-    return function(data) {
+
+var _ = require("lodash");
+module.exports = function(data) {
 
         var costCats = ["instruction", "support", "other", "facilities", "financing"];
 
@@ -52,4 +54,3 @@ define(["lodash"], function(_) {
         });
 
     };
-});

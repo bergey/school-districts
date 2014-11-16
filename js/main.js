@@ -1,8 +1,15 @@
 /* global require */
 
-require(["d3", "lodash", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist", "sdp/percapita-categories", "sdp/clean", "sdp/util"],
-        function(d3, _, exAdm, exPercapita, percapitaDist, percapitaCategories, clean, util) {
-            "use strict";
+"use strict";
+
+var d3 = require("d3");
+var _ = require("lodash");
+var exAdm = require("./ex-adm");
+var exPercapita = require("./ex-percapita");
+var percapitaDist = require("./percapita-dist");
+var percapitaCategories = require("./percapita-categories");
+var clean = require("./clean");
+var util = require("./util");
 
             // load data from CSV
             var load = function(year, displayGraph) {
@@ -44,5 +51,3 @@ require(["d3", "lodash", "sdp/ex-adm", "sdp/ex-percapita", "sdp/percapita-dist",
                 .text(_.property("text"));
 
             load(util.years[0], percapitaDist); // load most recent data
-
-        });
