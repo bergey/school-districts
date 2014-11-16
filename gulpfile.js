@@ -10,6 +10,9 @@ var del = require("del");
 var browserify = require("browserify");
 var source = require("vinyl-source-stream");
 var watchify = require("watchify");
+var replace = require("gulp-replace");
+
+var dist = "dist/school-districts/";  // mimic path on gh-pages
 
 var watchOrBrowserify = function(watch) { // false for distribution, true for dev
     return function() {
@@ -57,13 +60,17 @@ gulp.task("clean", function(cb) {
 });
 
 gulp.task("dist", ["clean", "browserify"], function() {
-    gulp.src("index.html").pipe(gulp.dest("dist"));
-    gulp.src("css/*.css").pipe(gulp.dest("dist/css"));
-    gulp.src("data/*").pipe(gulp.dest("dist/data"));
-    gulp.src("js/school-districts.js").pipe(gulp.dest("dist/js"));
+    gulp.src("index.html") .pipe(gulp.dest(dist));
+    gulp.src("css/*.css").pipe(gulp.dest(dist + "css"));
+    gulp.src("data/*").pipe(gulp.dest(dist + "data"));
+    gulp.src("js/school-districts.js")
+        .pipe(uglify())
+        // rewrite path for gh-pages
+        .pipe(replace(/"\/data\/"/, "\"/school-districts/data/\""))
+        .pipe(gulp.dest(dist + "js"));
 });
 
 gulp.task("gh-pages", ["dist"], function() {
-    return gulp.src("dist/**/*")
+    return gulp.src(dist + "**/*")
         .pipe(ghPages());
 });
