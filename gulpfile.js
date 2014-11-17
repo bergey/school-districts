@@ -11,6 +11,7 @@ var browserify = require("browserify");
 var source = require("vinyl-source-stream");
 var watchify = require("watchify");
 var replace = require("gulp-replace");
+var browserSync = require("browser-sync");
 
 var dist = "dist/school-districts/";  // mimic path on gh-pages
 
@@ -35,7 +36,8 @@ var watchOrBrowserify = function(watch) { // false for distribution, true for de
             // log errors if they happen
                 .on("error", gutil.log.bind(gutil, "Browserify Error"))
                 .pipe(source("js/school-districts.js"))
-                .pipe(gulp.dest("./"));
+                .pipe(gulp.dest("./"))
+                .pipe(browserSync.reload({stream: true}));
         }
 
         if (watch) {
@@ -74,3 +76,13 @@ gulp.task("gh-pages", ["dist"], function() {
     return gulp.src(dist + "**/*")
         .pipe(ghPages());
 });
+
+gulp.task("browser-sync", function() {
+    browserSync({
+        server: {
+            baseDir: "./"
+        }
+    });
+});
+
+gulp.task("default", ["watch", "browser-sync"]);
