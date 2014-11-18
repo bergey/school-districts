@@ -21,7 +21,7 @@ var load = function(year, displayGraph) {
     // d3.select("#nav").html("");
     // d3.select("#graphs").html("");
 
-    d3.csv("/data/" + year.path, function(error, data) {
+    d3.csv("/school-districts/data/" + year.path, function(error, data) {
         if (data) {
             clean(data);
             percapitaCategories.draw(data);
