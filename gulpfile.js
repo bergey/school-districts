@@ -129,6 +129,16 @@ gulp.task("browser-sync", function() {
     });
 });
 
+gulp.task("browser-sync-dist", function() {
+    browserSync({
+        server: {
+            baseDir: "./dist",
+        },
+        browser: "chromium",
+        startPath: prefix
+    });
+});
+
 gulp.task("copy", function() {
     gulp.src("data/**/*").pipe(gulp.dest(build + "data/"));
     gulp.src("data/**/*").pipe(gulp.dest(dist + "data/"));
@@ -140,5 +150,7 @@ gulp.task("dist", function(cb) {
         ["htmlDist", "jsDist", "cssDist", "copy"],
         cb);
 });
+
+gulp.task("dist-watch", ["dist", "browser-sync-dist"]);
 
 gulp.task("default", ["watch"]);
