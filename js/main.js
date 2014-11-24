@@ -1,4 +1,4 @@
-/* global require */
+/* global require, window */
 
 "use strict";
 
@@ -16,10 +16,6 @@ var load = function(year, displayGraph) {
     if (!year) {
         year = util.years[this.selectedIndex];
     }
-
-    // reset before redrawing
-    // d3.select("#nav").html("");
-    // d3.select("#graphs").html("");
 
     d3.csv("/school-districts/data/" + year.path, function(error, data) {
         if (data) {
@@ -41,13 +37,18 @@ var load = function(year, displayGraph) {
     });
 };
 
-var pickYear = d3.select("#sidebar").append("select")
-    .on("change", load)
-    .attr("style", "margin-top: 3em;");
+window.onload = function() {
+    var pickYear = d3.select("#sidebar").append("select")
+        .on("change", load)
+        .attr("style", "margin-top: 3em;");
 
-pickYear.selectAll("option")
-    .data(util.years).enter()
-    .append("option")
-    .text(_.property("text"));
+    console.log(pickYear);
+    console.log(util.years);
 
-load(util.years[0], percapitaDist); // load most recent data
+    pickYear.selectAll("option")
+        .data(util.years).enter()
+        .append("option")
+        .text(_.property("text"));
+
+    load(util.years[0], percapitaDist); // load most recent data
+};
