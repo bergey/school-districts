@@ -33,14 +33,16 @@ table {
 
 #sidebar {
     float: left;
+    width: 300px;
+    /* font: 1.8em; */
 }
 
 #nav {
-    list-style-type: no
+    list-style-type: none;
 }
 
 .nav {
-    font: 12px serif;
+    font-size: 1.1em;
 }
 .selected {
     color: #184B93;
