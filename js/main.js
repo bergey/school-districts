@@ -38,7 +38,7 @@ var load = function(year, displayGraph) {
 };
 
 window.onload = function() {
-    var pickYear = d3.select("#sidebar").append("select")
+    var pickYear = d3.select("#sidebar select")
         .on("change", load)
         .attr("style", "margin-top: 3em;");
 
