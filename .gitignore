@@ -3,3 +3,6 @@
 /raw-data/
 /dist/
 *~
+/.sass-cache/
+/build/
+*.css.map
