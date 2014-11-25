@@ -6,3 +6,4 @@
 /js/school-districts.js
 /.sass-cache/
 /build/
+*.css.map
