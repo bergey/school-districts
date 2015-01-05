@@ -43,7 +43,7 @@ var init = function() {
 
     // navigation button
     percapitaDist.nav = d3.select("#nav").append("li")
-        .text("Distribution of Per-capita Expenditure")
+        .text("Distribution of Per-student Expenditure")
         .classed("nav", true)
         .on("click", function() {
             util.showGraph(d3.select(d3.event.target), percapitaDist.svg);
